@@ -113,15 +113,18 @@ class OrderService implements OrderInterface
         $order =$this->order::findOrFail($id);
         $order->status = $data['status'];
         $order->save();
-
-        foreach ($data['items'] as $itemData) {
-            $orderItem = $this->item::find($itemData['id']);
-            if ($orderItem) {
-                $orderItem->status = $itemData['status'];
-                $orderItem->notes = $itemData['note'];
-                $orderItem->save();
+        if($data['items']){
+            foreach ($data['items'] as $itemData) {
+                $orderItem = $this->item::find($itemData['id']);
+                if ($orderItem) {
+                    $orderItem->status = $itemData['status'] ?? $orderItem->status;
+                    $orderItem->notes = $itemData['note'] ?? $orderItem->notes;
+                    $orderItem->save();
+                }
             }
         }
+
+
 
         return $order;
     }
