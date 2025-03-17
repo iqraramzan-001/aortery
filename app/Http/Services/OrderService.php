@@ -32,20 +32,18 @@ class OrderService implements OrderInterface
         $user = auth()->user();
 
         if ($user->type == User::TYPE_SUPPLIER) {
-
-            $orders = $this->order::with(['buyer', 'supplier', 'items.product'])
+            $query = $this->order::with(['buyer', 'supplier', 'items.product'])
                 ->where('supplier_id', $userId)
-                ->latest()
-                ->get();
+                ->latest();
         } elseif ($user->type == User::TYPE_BUYER) {
-            $orders = $this->order::with(['buyer', 'supplier', 'items.product'])
+            $query = $this->order::with(['buyer', 'supplier', 'items.product'])
                 ->where('buyer_id', $userId)
-                ->latest()
-                ->get();
+                ->latest();
         }
 
-      return $orders;
+        return $query->paginate(5);
     }
+
 
     public function store($data){
         try {
@@ -131,15 +129,17 @@ class OrderService implements OrderInterface
 
     public function updateStatus($data, $id)
     {
-        $order =$this->item::findOrFail($id);
+        $item =$this->item::where('id',$id)->first();
+        $order=$this->order::where('id',$item->order_id)->first();
+        if ($order) {
 
-//        $itemTotalPrice = $orderItem->price * $orderItem->quantity;
-//
-//        // Subtract from order total price
-//        $order->total_price -= $itemTotalPrice;
-//        $order->save();
-        $order->update(['status' => $data['status']]);
-        return $order;
+            $order->update([
+                'total_price' => $order->total_price - ($item->price * $item->quantity)
+            ]);
+        }
+
+        $item->update(['status' => $data['status']]);
+        return $item;
     }
 
 }

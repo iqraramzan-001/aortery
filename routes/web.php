@@ -28,6 +28,7 @@ Route::controller(FrontController::class)->group(function () {
 
 
 Route::controller(AuthController::class)->group(function () {
+    Route::get('resend-otp', 'resendOtp')->name('password.otp.resend');
     Route::get('verify-otp', 'showOtpForm')->name('password.otp.send');
     Route::post('verify-otp', 'verifyOtp')->name('password.otp.verify');
     Route::get('login', 'login')->name('login');
@@ -91,8 +92,6 @@ Route::group(['middleware' => 'auth'], function (){
             Route::get('download','downloadCSV')->name('product.download');
             Route::post('upload','uploadCSV')->name('product.upload');
             Route::delete('/delete/{id}', 'delete')->name('product.delete');
-
-
         });
     });
 

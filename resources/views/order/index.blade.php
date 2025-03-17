@@ -65,15 +65,38 @@
                         </div>
                         <nav aria-label="Page navigation example" class="mt-5 mb-4 wow animated fadeInDown pag">
                             <ul class="pagination justify-content-center">
-                                <li class="page-item disabled"><a class="page-link p-3 fs-13"><i class="fa fa-angle-left"></i></a></li>
-                                <li class="page-item"><a class="page-link p-3 fs-13 active bg-blue" href="javascript:;">1</a></li>
-                                <li class="page-item"><a class="page-link p-3 fs-13" href="javascript:;">2</a></li>
-                                <li class="page-item"><a class="page-link p-3 fs-13" href="javascript:;">3</a></li>
-                                <li class="page-item"><a class="page-link p-3 fs-13" href="javascript:;">...</a></li>
-                                <li class="page-item"><a class="page-link p-3 fs-13" href="javascript:;">31</a></li>
-                                <li class="page-item">
-                                    <a class="page-link p-3 fs-13" href="javascript:;"><i class="fa fa-angle-right"></i></a>
-                                </li>
+                                {{-- Previous Page Link --}}
+                                @if ($orders->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link p-3 fs-13"><i class="fa fa-angle-left"></i></span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link p-3 fs-13" href="{{ $orders->previousPageUrl() }}">
+                                            <i class="fa fa-angle-left"></i>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                {{-- Page Numbers --}}
+                                @foreach ($orders->links()->elements[0] as $page => $url)
+                                    <li class="page-item {{ $orders->currentPage() == $page ? 'active bg-blue' : '' }}">
+                                        <a class="page-link p-3 fs-13" href="{{ $url }}">{{ $page }}</a>
+                                    </li>
+                                @endforeach
+
+                                {{-- Next Page Link --}}
+                                @if ($orders->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link p-3 fs-13" href="{{ $orders->nextPageUrl() }}">
+                                            <i class="fa fa-angle-right"></i>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link p-3 fs-13"><i class="fa fa-angle-right"></i></span>
+                                    </li>
+                                @endif
                             </ul>
                         </nav>
                     </div>

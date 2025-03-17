@@ -18,7 +18,7 @@ class AdminController extends Controller
 
     public function approval(){
 
-        $company = Company::with(['supplier', 'buyer'])->paginate(2);
+        $company = Company::with(['supplier', 'buyer'])->paginate(5);
 
         return view('admin.approval',compact('company'));
     }

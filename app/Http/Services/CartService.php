@@ -19,21 +19,21 @@ class CartService implements CartInterface
         $cartItems = [];
 
         if (auth()->check()) {
-            // 🟢 Fetch Cart from Database with Product Relation
-            $userId = getLoggedUserId();
-            $dbCartItems = $this->model::with('product')->where('buyer_id', $userId)->get();
 
-            // ✅ Convert DB Cart to Array Format
-            foreach ($dbCartItems as $item) {
-                $cartItems[] = [
-                    'product_id' => $item->product_id,
-                    'quantity'   => $item->quantity,
-                    'product'    => $item->product, // ✅ No error here
-                ];
-            }
+            $userId = getLoggedUserId();
+        $cartItems = $this->model::with('product')->where('buyer_id', $userId)->get();
+
+
+//            foreach ($dbCartItems as $item) {
+//                $cartItems[] = [
+//                    'product_id' => $item->product_id,
+//                    'quantity'   => $item->quantity,
+//                    'product'    => $item->product,
+//                ];
+//            }
         }
 
-        // 🟢 Fetch Cart from Session
+
         $cart = session()->get('cart', []);
 
         if (!empty($cart)) {

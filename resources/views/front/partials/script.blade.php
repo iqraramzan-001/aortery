@@ -233,9 +233,9 @@
                             day: "numeric",
                             month: "short",
                             year: "numeric"
-                        }).replace(",", ""); // Comma hatane ke liye
+                        }).replace(",", "");
 
-                        // Update Modal Content
+
                         $("#orderDetailsModalLabel").text("Order #" + order.order_no);
                         $('#modal-order-no').text(order.order_no)
                         $('.order-id').val(order.id)
@@ -283,7 +283,7 @@
                             <div class="order-box">
                                                 <input type="hidden" class="orderItemId" value="${item.id}"/>
                                             </div>
-                                            <textarea class="form-control shadow-none" name="notes" placeholder="Notes" rows="4">${item.notes}</textarea>
+                                            <textarea class="form-control shadow-none" name="notes" placeholder="Notes" rows="4">   ${item.notes ? item.notes : ''} </textarea>
                                             <div class="d-flex gap-3 align-items-center mt-4">
                                                 <div class="form-check">
                                                     <input class="form-check-input mt-0 shadow-none" type="radio" name="status_${item.id}" id="r1_${item.id}" value="approve" ${item.status === 'approve' ? 'checked' : ''}>
@@ -317,9 +317,11 @@
                                             <input type="text" class="form-control text-center w-50p shadow-none" value="${item.quantity}" readonly />
                                         </div>
                                         <p class="fs-13 d-block mt-3">Supplier: ${supplierName}</p>
-                                        <button class="btn btn-outline-danger px-3 rounded-pill my-3 btn-sm item-update-status" data-id=${item.id} data-status="canceled">
-                                            <i class="fa fa-times me-1"></i> Cancel Item
-                                        </button>
+                                       ${item.status === 'pending' ? `
+                                                <button class="btn btn-outline-danger px-3 rounded-pill my-3 btn-sm item-update-status" data-id="${item.id}" data-status="canceled">
+                                                    <i class="fa fa-times me-1"></i> Cancel Item
+                                                </button>
+                                            ` : ''}
                                     </div>
                                     <div class="col-lg-3 col-md-12 col-sm-12 my-3">
                                         <span class="badge bg-success px-2 rounded-pill my-2 btn-sm">
@@ -731,10 +733,147 @@
 
 
 
+        $(".delete-cart-item").on("click", function (e) {
+            e.preventDefault();
+
+            let button = $(this);
+            let cartId = button.data("id");
+            let url = "{{ route('cart.delete', ':id') }}".replace(':id', cartId);
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This item will be removed from your cart.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send AJAX request to delete
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function (response) {
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Your item has been removed.",
+                                icon: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+
+                            // Remove item from UI
+                            $(".cart-item-" + cartId).fadeOut(500, function () {
+                                $(this).remove();
+                                calculateTotalPrice();
+                            });
+
+                        },
+                        error: function (xhr) {
+                            Swal.fire("Error!", "Could not remove the item.", "error");
+                        }
+                    });
+                }
+            });
+        });
+
+        function calculateTotalPrice() {
+            console.log("Inside total")
+            let total = 0;
+
+            document.querySelectorAll('.quantity-input').forEach(function(input) {
+                let price = parseFloat(input.getAttribute('data-price'));
+                let quantity = parseInt(input.value);
+                total += price * quantity;
+            });
+            console.log("total",total);
+
+            document.getElementById('total-price').textContent = total.toFixed(2);
+        }
 
 
 
 
+
+
+
+    });
+</script>
+
+<script>
+
+    $(document).ready(function() {
+
+        const rangeInput = document.querySelectorAll(".range-input input"),
+            priceInput = document.querySelectorAll(".price-input input"),
+            range = document.querySelector(".slider .progress");
+        let priceGap = 1000;
+
+        priceInput.forEach((input) => {
+            input.addEventListener("input", (e) => {
+                let minPrice = parseInt(priceInput[0].value),
+                    maxPrice = parseInt(priceInput[1].value);
+
+                if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
+                    if (e.target.className === "input-min") {
+                        rangeInput[0].value = minPrice;
+                        range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
+                    } else {
+                        rangeInput[1].value = maxPrice;
+                        range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
+                    }
+                }
+            });
+        });
+
+        rangeInput.forEach((input) => {
+            input.addEventListener("input", (e) => {
+                let minVal = parseInt(rangeInput[0].value),
+                    maxVal = parseInt(rangeInput[1].value);
+
+                if (maxVal - minVal < priceGap) {
+                    if (e.target.className === "range-min") {
+                        rangeInput[0].value = maxVal - priceGap;
+                    } else {
+                        rangeInput[1].value = minVal + priceGap;
+                    }
+                } else {
+                    priceInput[0].value = minVal;
+                    priceInput[1].value = maxVal;
+                    range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
+                    range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
+                }
+            });
+        });
+
+
+        $(document).ready(function () {
+            $(".sub-menu").hide();
+            $("#sub1").show();
+            $(".main-cats li:first-child a").addClass("active");
+            $(".main-cats li a").hover(function () {
+                var index = $(this).parent().index();
+                $(".main-cats li a").removeClass("active");
+                $(this).addClass("active");
+                $(".sub-menu").hide();
+                $("#sub" + (index + 1)).show();
+            });
+        });
+
+        $('.filter.title').click(function () {
+            $('.overlay').addClass('shown');
+            $('html').addClass('overflow-hidden');
+        });
+        $('.timess').click(function () {
+            $('.overlay').removeClass('shown');
+            $('html').removeClass('overflow-hidden');
+        });
+
+
+        new WOW().init();
     });
 </script>
 

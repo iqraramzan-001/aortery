@@ -21,7 +21,8 @@
                                     @endif
                                 </div>
                                 <div class="col-12 my-3">
-                                    <p class="text-purple">Resend OTP after (45)</p>
+                                    <p class="text-purple">Resend OTP after <span id="countdown">45</span> seconds</p>
+                                    <button id="resendOtpBtn" class="btn btn-link text-purple" style="display: none;" onclick="resendOtp()">Resend OTP</button>
                                 </div>
                                 <div class="col-12 my-3">
                                     <button type="submit" class="btn btn-blue p-3 w-100 rounded-pill fs-5">Log In</button>
@@ -37,4 +38,44 @@
             </div>
         </div>
     </section>
+    <script>
+        let timer = 45;
+        let countdownElement = document.getElementById("countdown");
+        let resendBtn = document.getElementById("resendOtpBtn");
+
+        function startCountdown() {
+            let countdownInterval = setInterval(() => {
+                if (timer > 0) {
+                    countdownElement.textContent = timer;
+                    timer--;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownElement.parentElement.style.display = "none"; // Hide countdown text
+                    resendBtn.style.display = "block"; // Show Resend button
+                }
+            }, 1000);
+        }
+
+        function resendOtp() {
+            fetch("{{ route('password.otp.resend') }}", {
+                method: "GET",
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        timer = 45;
+                        countdownElement.textContent = timer;
+                        countdownElement.parentElement.style.display = "block";
+                        resendBtn.style.display = "none";
+                        startCountdown();
+                    } else {
+                        alert("Failed to resend OTP. Try again.");
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        }
+
+        startCountdown();
+    </script>
 @endsection

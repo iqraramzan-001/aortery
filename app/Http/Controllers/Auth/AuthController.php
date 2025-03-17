@@ -126,6 +126,36 @@ class AuthController extends Controller
     }
 
 
+    public  function resendOTP(){
+        $email = session('auth_email');
+
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found'], 404);
+        }
+
+            $token = rand(100000, 999999);
+            DB::table('password_reset_tokens')->where('email',$email)->delete();
+
+            DB::table('password_reset_tokens')->insert([
+                'email' => $email,
+                'token' => $token,
+                'created_at' => Carbon::now()
+            ]);
+
+            Mail::send('login-send', ['token' => $token], function($message) use($email){
+                $message->to($email);
+                $message->subject(' OTP HERE');
+            });
+            return response()->json(['success' => true, 'message' => 'OTP Resent Successfully']);
+
+
+
+
+    }
+
+
 
     public function signup(RegisterRequest $request){
 

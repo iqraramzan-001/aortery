@@ -11,7 +11,11 @@
             </div>
 
             <div class="row align-items-stretch">
+                @if(Auth::user()->type==='admin')
+                    @include('admin.components.sidebar')
+                @else
                 @include('components.admin-sidebar')
+                @endif
 
                 <div class="col-lg-9 col-md-8 my-4 wow animated fadeInDown">
                     <div class="bg-white rounded-2 p-4 shadow-sm animated wow fadeInDown h-100">

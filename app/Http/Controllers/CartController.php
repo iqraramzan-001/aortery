@@ -14,6 +14,7 @@ class CartController extends Controller
 
     public function index(){
         $carts=$this->cart->index();
+
         return view('cart.detail',compact('carts'));
     }
     public function store(Request $request){
@@ -39,7 +40,8 @@ class CartController extends Controller
     public function destroy($id){
         $cart=$this->cart->delete($id);
         if($cart){
-            return redirect()->back()->with('success', 'Cart item deleted successfully');
+            return response()->json(['message' => 'Item removed successfully!']);
+
         }
 }
 

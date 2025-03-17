@@ -40,8 +40,14 @@
                                     <button type="submit" class="bg-transparent border-0 text-danger">
                                         <i class="fa fa-power-off"></i>
                                     </button>
-                                </form></small><b class="d-block text-blue mt-2">{{$name}}</b></a></li>
-                @else
+                                </form></small>
+                            <a href="{{ Auth::user()->type === 'supplier' ? route('supplier.profile') : route('buyer.profile') }}"
+                               class="d-block text-blue mt-2">
+                                {{ $name }}
+                            </a>
+
+
+                        @else
                     <li class="nav-item">
                         <a class="nav-link py-3 px-1 px-lg-4 transition" href="{{ route('login') }}">Log In</a>
                     </li>
