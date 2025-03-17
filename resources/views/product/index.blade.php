@@ -67,12 +67,16 @@
                                 <label class="btn btn-sm" for="option4"><i class="fa fa-list"></i></label>
                             </div>
                             <div class="d-sm-flex align-items-cneter gap-2 my-3 filters">
+{{--                                <form id="searchForm" class="position-relative search-bar w-auto my-0 wow animated fadeInRight" role="search">--}}
+{{--                                    <input class="form-control w-100 shadow-none rounded-pill fs-14 searchInput" type="search" placeholder="Search" aria-label="Search"--}}
+{{--                                           name="search" id="searchInput" />--}}
+{{--                                    <button class="btn btn-light border-0 shadow-none position-absolute start-0 top-0" type="submit">--}}
+{{--                                        <i class="fa fa-search"></i>--}}
+{{--                                    </button>--}}
+{{--                                </form>--}}
                                 <form id="searchForm" class="position-relative search-bar w-auto my-0 wow animated fadeInRight" role="search">
-                                    <input class="form-control w-100 shadow-none rounded-pill fs-14" type="search" placeholder="Search" aria-label="Search"
-                                           name="search" id="searchInput" />
-                                    <button class="btn btn-light border-0 shadow-none position-absolute start-0 top-0" type="submit">
-                                        <i class="fa fa-search"></i>
-                                    </button>
+                                    <input class="form-control w-100 shadow-none rounded-pill fs-14 searchInput" type="search" placeholder="Search" aria-label="Search" id="searchInput" />
+                                    <button class="btn bnt-light border-0 shadow-none position-absolute start-0 top-0" type="submit"><i class="fa fa-search"></i></button>
                                 </form>
 
                                 <select  class="form-select rounded-pill fs-14 shadow-none wow animated fadeInRight w-auto" name="filter" id="filterSelect">
@@ -179,10 +183,4 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
 @endsection

@@ -65,19 +65,22 @@
                                             <label class="form-label">Warehouse Location</label>
                                         </div>
                                     </div>
-                                    <div class="row warehouseRow" >
+                                @foreach($company->warehouses as $house)
+                                    <div class="row warehouseRow"  id="row-{{$house->id}}">
                                         <div class="col-lg-4">
                                             <div class="my-4 wow animated fadeInDown">
                                                 <label class="form-label">Warehouse Name <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control p-3 rounded-pill shadow-none" placeholder="Ex: XYZ PVT LTD" name="house_name"/>
+                                                <input type="text" class="form-control p-3 rounded-pill shadow-none" placeholder="Ex: XYZ PVT LTD" name="house_name[]" value="{{$house->name}}"/>
                                             </div>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="my-4 wow animated fadeInDown">
                                                 <label class="form-label">Location</label>
-                                                <input type="text" class="form-control p-3 rounded-pill shadow-none locationInput" placeholder="Click to Select Location" readonly />
-                                                <input type="hidden" class="latitude" name="latitude" />
-                                                <input type="hidden" class="longitude" name="longitude" />
+                                                <input type="text" class="form-control p-3 rounded-pill shadow-none locationInput" placeholder="@ google map" readonly />
+                                                <input type="hidden" class="houseId" name="id[]" value="{{$house->id}}" />
+                                                <input type="hidden" class="latitude" name="latitude[]" value="{{$house->latitude}}" />
+                                                <input type="hidden" class="longitude" name="longitude[]" value="{{$house->longitude}}" />
+                                                <input type="hidden" class="location" name="location[]" value="{{$house->location}}"   />
                                             </div>
                                         </div>
                                         <div class="col-lg-4 position-relative">
@@ -86,20 +89,19 @@
                                             <div class="row">
                                                 <div class="col-sm-6">
                                                     <div class="mb-4 wow animated fadeInDown">
-                                                        <input type="time" class="form-control p-3 rounded-pill shadow-none" placeholder="09:00 AM" name="open_from" />
+                                                        <input type="time" class="form-control p-3 rounded-pill shadow-none" placeholder="09:00 AM" name="open_from[]" value="{{$house->open_from}}" />
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <div class="mb-4 wow animated fadeInDown">
-                                                        <input type="time" class="form-control p-3 rounded-pill shadow-none" placeholder="06:00 PM" name="open_to" />
+                                                    <div class="mb-4 wow animated fadeInDown d-flex">
+                                                        <input type="time" class="form-control p-3 rounded-pill shadow-none" placeholder="06:00 PM" name="open_to[]" value="{{$house->open_to}}" />
+                                                        <button type="button" class="btn btn-outline-danger w-100 p-2 delete-warehouse" data-id="{{$house->id}}"><i class="fa fa-trash-alt me-1"></i></button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-
-
-
+                                @endforeach
                                 <div class="col-12">
                                     <button id="wareHouseBtn" type="button"  class="btn btn-purple rounded-pill btn-sm px-3"><i class="fa fa-plus me-1"></i>Add Another</button>
                                 </div>
@@ -214,7 +216,7 @@
     </section>
 
 
-    <div class="locationModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="locationModal modal fade"  tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -224,11 +226,15 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <input id="autocomplete" class="form-control mb-2" type="text" placeholder="Search a location...">
+
+                    <p class="mt-2"><strong>Coordinates:</strong> <span class="info">N/A</span></p>
+
                     <div id="map" style="width: 100%; height: 400px;"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" id="saveLocationBtn" class="btn btn-primary">Save Location</button>
+                    <button type="button" class="btn btn-secondary saveLocationBtn" data-dismiss="modal">Close</button>
+                    <button type="button"  class="btn btn-primary saveLocationBtn">Save Location</button>
                 </div>
             </div>
         </div>
@@ -269,85 +275,150 @@
         </div>
     </div>
 
-
-
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        let currentRow = null;
+        let map, marker;
+
+        window.initMap = function () {
+            const defaultPosition = { lat: 37.7749, lng: -122.4194 }; // San Francisco
+
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: defaultPosition
+            });
+
+
+            marker = new google.maps.Marker({
+                position: defaultPosition,
+                map: map,
+                draggable: true
+            });
+
+
+            autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
+            autocomplete.bindTo('bounds', map);
+
+
+            autocomplete.addListener('place_changed', function () {
+                const place = autocomplete.getPlace();
+                if (!place.geometry) return;
+
+                map.setCenter(place.geometry.location);
+                marker.setPosition(place.geometry.location);
+                updateCoordinates(place.geometry.location);
+            });
+
+            // Update coordinates when marker is dragged
+            marker.addListener('dragend', function (event) {
+                updateCoordinates(event.latLng);
+            });
+
+            // Initialize Geocoder
+            geocoder = new google.maps.Geocoder();
+
+
+            function updateCoordinates(location) {
+                if (currentRow) {
+                    let lat = location.lat();
+                    let lng = location.lng();
+                    currentRow.find(".latitude").val(location.lat());
+                    currentRow.find(".longitude").val(location.lng());
+                    currentRow.find(".locationInput").val(`Lat: ${location.lat()}, Lng: ${location.lng()}`);
+                    getAddress(lat, lng);
+                }
+            }
+            // // Function to update coordinates
+            // function updateCoordinates(location) {
+            //     const lat = location.lat();
+            //     const lng = location.lng();
+            //     getAddress(lat, lng);
+            //     $(".info").text(`${lat}, ${lng}`);
+            //
+            //     console.log("New Coordinates:", lat, lng);
+            // }
+
+
+            function getAddress(lat, lng) {
+                const latLng = { lat: lat, lng: lng };
+
+                geocoder.geocode({ location: latLng }, function (results, status) {
+                    if (status === "OK") {
+                        if (results[0]) {
+                            const address = results[0].formatted_address;
+                            console.log("Address",address)
+                            console.log("Lat",lat)
+                            console.log("Loni",lng)
+
+
+                            // ✅ Setting the address correctly
+                            currentRow.find(".location").val(address);
+                            currentRow.find(".locationInput").val(address);
+
+
+
+                        }
+                    } else {
+                        console.log("Geocoder failed due to: " + status);
+                    }
+                });
+            }
+        };
+    </script>
+
+
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQxDtoDoP_al1kFRr5txQZz4pL9fIacqw&libraries=places&callback=initMap" async defer></script>
 
 
     <script>
 
+
         $(document).ready(function () {
-
-
             $("#wareHouseBtn").click(function (e) {
                 e.preventDefault();
                 console.log("WAREHOUSE button clicked");
 
-                // Clone the last warehouse row
                 let newRow = $(".warehouseRow").last().clone();
-
-                // Generate a unique ID for this new row
+                newRow.find("input").val(""); // Clear input values
                 let uniqueId = new Date().getTime();
-
-                // Update input fields to ensure uniqueness
                 newRow.find("input").each(function () {
                     let name = $(this).attr("name");
-                    $(this).attr("name", name + "_" + uniqueId); // Ensure unique names
-                    $(this).val(""); // Clear input values
+                    $(this).attr("name", name + "_" + uniqueId);
+                    $(this).val("");
                 });
 
-                // Append the new row below the last one
                 $(".warehouseRow").last().after(newRow);
             });
 
 
-            let selectedInput = null;
-            let map, marker;
 
-            function initMap() {
-                map = new google.maps.Map(document.getElementById("map"), {
-                    center: { lat: 31.5204, lng: 74.3587 }, // Default location (Lahore)
-                    zoom: 10,
-                });
 
-                marker = new google.maps.Marker({
-                    position: { lat: 31.5204, lng: 74.3587 },
-                    map: map,
-                    draggable: true,
-                });
 
-                google.maps.event.addListener(marker, "dragend", function () {
-                    let position = marker.getPosition();
-                    console.log("Lat: " + position.lat() + ", Lng: " + position.lng());
-                });
-            }
 
-// Open Modal & Load Google Maps
             $(document).on("click", ".locationInput", function () {
-                selectedInput = $(this);
+                console.log("LocationInput clci");
+                currentRow = $(this).closest(".warehouseRow");
+                console.log("Current Row",currentRow);
+
+                let lat = parseFloat(currentRow.find(".latitude").val()) || 37.7749;
+                let lng = parseFloat(currentRow.find(".longitude").val()) || -122.4194;
+console.log("Lat.................",lat);
+console.log("lON...................",lng)
+                let position = { lat: lat, lng: lng };
+
+                map.setCenter(position);
+                marker.setPosition(position);
+
                 $(".locationModal").modal("show");
 
-                setTimeout(() => {
-                    google.maps.event.trigger(map, "resize");
-                    let defaultLat = parseFloat(selectedInput.siblings(".latitude").val()) || 31.5204;
-                    let defaultLng = parseFloat(selectedInput.siblings(".longitude").val()) || 74.3587;
-                    map.setCenter({ lat: defaultLat, lng: defaultLng });
-                    marker.setPosition({ lat: defaultLat, lng: defaultLng });
-                }, 500);
             });
 
-// Save Selected Location
-            $("#saveLocationBtn").click(function () {
-                let position = marker.getPosition();
-                let lat = position.lat();
-                let lng = position.lng();
 
-                if (selectedInput) {
-                    selectedInput.val(`Lat: ${lat}, Lng: ${lng}`);
-                    selectedInput.siblings(".latitude").val(lat);
-                    selectedInput.siblings(".longitude").val(lng);
-                }
 
+            $(".saveLocationBtn").click(function () {
                 $(".locationModal").modal("hide");
             });
 
@@ -360,7 +431,21 @@
                 $('#confirmationModal').modal('hide');
                 e.preventDefault();
 
+                let warehouses = [];
+                $(".warehouseRow").each(function () {
+                    let warehouseData = {
+                        name: $(this).find("[name^='house_name']").val(),
+                        latitude: $(this).find(".latitude").val(),
+                        longitude: $(this).find(".longitude").val(),
+                        open_from: $(this).find("[name^='open_from']").val(),
+                        open_to: $(this).find("[name^='open_to']").val(),
+                        location:$(this).find(".location").val(),
+                    };
+                    warehouses.push(warehouseData);
+                });
+
                 var formData = new FormData($('#profileForm')[0]);
+                formData.append("warehouses", JSON.stringify(warehouses));
 
                 $.ajax({
                     url: $('#profileForm').attr('action'),
@@ -377,6 +462,50 @@
                 });
             });
 
+            $(document).on("click", ".delete-warehouse", function () {
+                let warehouseId = $(this).data("id");
+                console.log("Deleting: #row-" + warehouseId); // Debugging
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('delete.warehouse', ':id') }}".replace(':id', warehouseId), // Laravel Route
+                            type: "DELETE",
+                            data: {
+                                _token: "{{ csrf_token() }}"
+                            },
+                            success: function (response) {
+                                let jsonResponse = typeof response === "string" ? JSON.parse(response) : response;
+
+                                if (jsonResponse.status === "success") {
+                                    Swal.fire("Deleted!", jsonResponse.message, "success");
+
+                                    $("#row-" + warehouseId).fadeOut(500, function () {
+                                        $(this).remove();
+                                    });
+                                } else {
+                                    Swal.fire("Error!", "Something went wrong.", "error");
+                                }
+                            },
+
+                            error: function () {
+                                console.log("AJAX Error:", xhr.responseText);
+                                Swal.fire("Error!", "Something went wrong.", "error");
+                            }
+                        });
+                    }
+                });
+            });
+
+
         });
     </script>
     <script>
@@ -387,7 +516,7 @@
         };
 
         function previewFiles(input, category) {
-            // Append new files to the selected category array
+
             Array.from(input.files).forEach((file) => {
                 selectedFiles[category].push(file);
             });

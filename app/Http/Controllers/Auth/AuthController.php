@@ -95,23 +95,23 @@ class AuthController extends Controller
             return redirect()->back()->withErrors(['otp' => 'OTP has expired.']);
         }
 
-        // ✅ Get email from session
+
         $email = session('auth_email');
 
         if (!$email) {
             return redirect()->route('login')->withErrors(['otp' => 'Session expired, please log in manually.']);
         }
 
-        // ✅ Find user and log in
+
         $user = User::where('email', $email)->first();
 
         if ($user) {
             Auth::login($user);
 
-            // ✅ Clear OTP record after successful login
+
             DB::table('password_reset_tokens')->where('email', $email)->delete();
 
-            // ✅ Handle cart transfer if exists
+
             if (session()->has('cart')) {
                 $this->transferSessionCartToDatabase($user->id);
             }
@@ -149,9 +149,6 @@ class AuthController extends Controller
                 $message->subject(' OTP HERE');
             });
             return response()->json(['success' => true, 'message' => 'OTP Resent Successfully']);
-
-
-
 
     }
 

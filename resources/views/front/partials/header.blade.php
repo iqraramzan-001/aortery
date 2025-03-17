@@ -6,7 +6,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <form class="position-relative search-bar ms-lg-4" role="search">
-                <input class="form-control w-100 shadow-none rounded-pill" type="search" placeholder="Search" aria-label="Search" />
+                <input class="form-control w-100 shadow-none rounded-pill searchInput" type="search" placeholder="Search" aria-label="Search" />
                 <button class="btn bnt-light border-0 shadow-none position-absolute start-0 top-0" type="submit"><i class="fa fa-search"></i></button>
             </form>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">

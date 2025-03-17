@@ -33,7 +33,10 @@ class WareHouseController extends Controller
     public function destroy($id){
         $house=WareHouse::where('id',$id)->delete();
         if($house){
-            return redirect()->back()->with('success', 'WareHouse deleted successfully');
+            return response()->json([
+                'status' => 'success',
+                'message' => 'WareHouse Deleted Successfully'
+            ], 200);
         }
     }
 

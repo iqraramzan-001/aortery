@@ -6,7 +6,7 @@
 
 <script>
     new WOW().init();
-        CKEDITOR.replace('editor');
+    CKEDITOR.replace('editor');
 
 </script>
 
@@ -613,8 +613,9 @@
         });
 
         // Handle Search Input
-        $("#searchInput").on("keyup", function () {
+        $(".searchInput").on("keyup", function () {
             fetchProducts();
+
         });
 
         // Handle Filter Change
@@ -639,10 +640,20 @@
                 success: function (response) {
                     if (viewType === "grid") {
                         $('#grid-View').html(response.gridView).show();
+                        if (searchQuery.trim() !== "") {
+                            $(".pag").hide(); // Hide pagination when searching
+                        } else {
+                            $(".pag").show(); // Show pagination if search is empty
+                        }
 
 
                     } else {
                         $('#list-View').html(response.listView).show();
+                        if (searchQuery.trim() !== "") {
+                            $(".pag").hide(); // Hide pagination when searching
+                        } else {
+                            $(".pag").show(); // Show pagination if search is empty
+                        }
 
                     }
                 }
@@ -716,6 +727,7 @@
 
 
             $('.openProductDetailModal').on('click', function() {
+
                 let name = $(this).data('name');
                 let image = $(this).data('image');
                 let oldPrice = $(this).data('old-price');
@@ -723,12 +735,14 @@
                 let supplier = $(this).data('supplier');
                 let description = $(this).data('description');
 
+                let cleanDescription = description.replace(/<[^>]*>/g, "");
+
                 $('#productModalLabel').text(name);
                 $('#modalProductImage').attr('src', image);
                 $('#modalOldPrice').text(`$${oldPrice}`);
                 $('#modalNewPrice').text(`$${newPrice}`);
                 $('#modalSupplier').text(supplier);
-                $('#modalDescription').text(description);
+                $("#modalDescription").text(cleanDescription);
             });
 
 

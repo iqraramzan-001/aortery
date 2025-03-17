@@ -1,4 +1,7 @@
+@if($products && count($products) > 0)
 @foreach($products as $product)
+
+
     <div class="col-lg-4 col-md-6 col-sm-6 wow animated fadeInDown mt-4">
         <div class="img-box p-4 rounded-2 position-relative bg-white text-center shadow-sm">
 
@@ -25,7 +28,7 @@
                         data-old-price="{{ $product->discount_price }}"
                         data-new-price="{{ $product->price }}"
                         data-supplier="{{ $product->supplier->first_name . ' ' . $product->supplier->last_name }}"
-                        data-description="{{ $product->description }}">
+                        data-description="{!! $product->description !!}">
                     <i class="fa fa-eye"></i>
                 </button>
 
@@ -46,3 +49,6 @@
         </div>
     </div>
 @endforeach
+@else
+    <p class="no-products">No products.</p>
+@endif

@@ -38,9 +38,9 @@
                                     @endphp
 
                                     <div class="order-box shadow-sm transition px-4 py-1 mt-4 rounded-2 p-4 position-relative cart-item-{{ $cart['product_id'] }}">
-                                        <a href="javascript:;" data-id="{{ $cart['product_id'] }}" class="btn btn-danger delete-cart-item rounded-circle fs-12 position-absolute top-0 start-100 translate-middle p-0 px-1">
+                                        <button data-id="{{ $cart['product_id'] }}" class="btn btn-danger delete-cart-item rounded-circle fs-12 position-absolute top-0 start-100 translate-middle p-0 px-1">
                                             <i class="fa fa-times"></i>
-                                        </a>
+                                        </button>
 
                                         <div class="row align-items-stretch">
                                             <div class="col-lg-2 col-md-4 col-sm-4 my-3">
@@ -73,9 +73,9 @@
                             @foreach($carts as $cart)
 
                                 <div class="order-box shadow-sm transition px-4 py-1 mt-4 rounded-2 p-4 position-relative cart-item-{{ $cart->id }}">
-                                    <a href="javascript:;" data-id="{{ $cart->id }}" class="btn btn-danger delete-cart-item rounded-circle fs-12 position-absolute top-0 start-100 translate-middle p-0 px-1">
+                                    <button data-id="{{ $cart->id }}" class="btn btn-danger delete-cart-item rounded-circle fs-12 position-absolute top-0 start-100 translate-middle p-0 px-1">
                                         <i class="fa fa-times"></i>
-                                    </a>
+                                    </button>
                                     <div class="row align-items-stretch">
                                         <div class="col-lg-2 col-md-4 col-sm-4 my-3">
                                             @php

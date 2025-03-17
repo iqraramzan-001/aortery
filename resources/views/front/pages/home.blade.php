@@ -20,36 +20,13 @@
                 </div>
             </div>
             <div class="row align-items-stretch mt-5 justify-content-center">
-                <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
-                    <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="fa fa-laptop-medical fa-3x mb-4 d-block"></i>Diagnostic</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
-                    <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="fa fa-prescription-bottle-medical fa-3x mb-4 d-block"></i>Theraputic</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
-                    <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="fa fa-file-medical fa-3x mb-4 d-block"></i>Surgical</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
-                    <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="fa fa-briefcase-medical fa-3x mb-4 d-block"></i>Monitoring</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
-                    <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="fa fa-house-medical-circle-check fa-3x mb-4 d-block"></i>Durable Medical</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
-                    <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="fa fa-user-doctor fa-3x mb-4 d-block"></i>Life Support</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
-                    <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="fa fa-truck-medical fa-3x mb-4 d-block"></i>Emergency &amp; Transport</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
-                    <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="fa fa-house-medical-flag fa-3x mb-4 d-block"></i>Laboratory</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
-                    <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="fa fa-house-medical fa-3x mb-4 d-block"></i>Rehabilitation</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
-                    <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="fa fa-ellipsis fa-3x mb-4 d-block"></i>View More</a>
-                </div>
+                @foreach($categories as $cat)
+                    <div class="col-lg-3 col-md-4 col-sm-6 mt-4">
+                        <a href="javascript:;" class="btn btn-light py-4 px-3 text-center wow animated fadeInDown h-100 w-100 shadow-sm"><i class="{{$cat->icon}}"></i>{{$cat->name}}</a>
+                    </div>
+                @endforeach
+
+
             </div>
         </div>
     </section>

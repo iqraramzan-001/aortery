@@ -25,7 +25,7 @@ class ProductController extends Controller
         $products=$this->product->index();
 
             $categories=Category::where('parent_id',null)->get();
-            $productCategory=Category::whereHas('products')->get();
+            $productCategory=Category::whereHas('products')->limit(12)->get();
             return view('product.index',compact('products','categories','productCategory'));
     }
 
@@ -126,19 +126,18 @@ class ProductController extends Controller
 
     public function uploadCSV(Request $request)
     {
-        // 🟢 Validate File (Only CSV Allowed)
+
         $request->validate([
             'csv_file' => 'required|mimes:csv,txt|max:2048',
         ]);
 
-        // 🟢 File Read Karein
+
         $file = fopen($request->file('csv_file')->getPathname(), 'r');
 
-        // 🟢 Skip Headers
+
         fgetcsv($file);
         $supplierId = getLoggedUserId();
 
-        // 🟢 Read File & Insert Data
         while (($row = fgetcsv($file)) !== false) {
 
             $category=$this->getCategoryId($row[2]);
@@ -154,7 +153,7 @@ class ProductController extends Controller
                 'subcategory_id'     => $subcategory,
                 'subsubcategory_id' => $subsubcategory,
                 'price'               => $row[5],
-                'discount'            => $row[6],
+                'discount_price'            => $row[6],
                 'model_no'               => $row[7],
                 'mdma_no'                => $row[8],
                 'warehouse_id'           =>$house,
@@ -164,7 +163,7 @@ class ProductController extends Controller
                 'manufacturer'        => $row[14],
                 'country'             => $row[15],
                 'description'          =>$row[16],
-                'classification'=>$row[17],
+                'classification'       =>$row[17],
             ]);
 
 
@@ -187,7 +186,6 @@ class ProductController extends Controller
     }
 
 
-// 🟢 Category ID Fetch Karne Ka Helper Function
     private function getCategoryId($name)
     {
          $category=Category::where('name', $name)->value('id') ?? null;

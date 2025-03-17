@@ -1,5 +1,5 @@
+@if($products && count($products) > 0)
 @foreach($products as $product)
-
     @php
         $firstImage = $product->images->first();
         $imageUrl = ($firstImage && $firstImage->type === 'external') ? $firstImage->file : asset('docs/' . ($firstImage->file ?? 'default.jpg'));
@@ -35,3 +35,6 @@
         </div>
     </div>
 @endforeach
+@else
+    <p class="no-products">No products.</p>
+@endif

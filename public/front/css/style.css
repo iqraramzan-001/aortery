@@ -415,6 +415,15 @@ input[type="range"]::-moz-range-thumb {
   margin-top: 2rem;
 }
 
+.no-products {
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 20%;
+    color: #333;
+    font-weight: bold;
+}
+
+
 .overlay{
   z-index: 10000;
   background:rgba(0, 0, 0, 0.55);

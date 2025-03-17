@@ -11,7 +11,10 @@ class WareHouse extends Model
         'location',
         'company_id',
         'open_from',
-        'open_to'
+        'open_to',
+        'longitude',
+        'latitude'
+
     ];
 
     public function company()

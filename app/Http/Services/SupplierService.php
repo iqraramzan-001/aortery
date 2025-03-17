@@ -25,7 +25,6 @@ class SupplierService implements SupplierInterface
     }
     public function profile(array $data)
     {
-
         try {
             DB::beginTransaction();
             $id = Auth::id();
@@ -44,13 +43,25 @@ class SupplierService implements SupplierInterface
             ]);
             $company = $this->company->where('user_id',$id)->first();
 
-            $warehouse=WareHouse::create([
-                'company_id'=>$company->id,
-                'name'=>$data['house_name'],
-                'location'=>$data['location'],
-                'open_from'=>$data['open_from'],
-                'open_to'=>$data['open_to']
-            ]);
+            $warehouses = json_decode($data['warehouses'], true);
+
+            if($warehouses){
+                WareHouse::where('company_id',$company->id)->delete();
+            }
+
+            foreach ($warehouses as $warehouse) {
+                Warehouse::create([
+                    'name' => $warehouse['name'],
+                    'company_id'=>$company->id,
+                    'location' => $warehouse['location'],
+                    'latitude' => $warehouse['latitude'],
+                    'longitude' => $warehouse['longitude'],
+                    'open_from' => $warehouse['open_from'],
+                    'open_to' => $warehouse['open_to']
+                ]);
+            }
+
+
 
             $this->model->where('user_id', $id)->update([
                 'first_name' => $data['first_name'],

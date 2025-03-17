@@ -20,7 +20,7 @@ class SupplierController extends Controller
     {
         $userId = Auth::id();
 
-        $company = Company::where('user_id', $userId)->first();
+        $company = Company::with('warehouses')->where('user_id', $userId)->first();
 
 
         $supplier = Auth::user()->supplier ? Supplier::where('id', Auth::user()->supplier->id)->first() : null;

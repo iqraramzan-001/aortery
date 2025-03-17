@@ -17,12 +17,12 @@
                                 <input type="radio" class="btn-check" name="options-base1" id="option4" autocomplete="off" />
                                 <label class="btn btn-sm" for="option4"><i class="fa fa-list"></i></label>
                             </div>
-                            <div class="d-sm-flex align-items-cneter gap-2 my-3 filters">
-                                <form class="position-relative search-bar w-auto my-0 wow animated fadeInRight" role="search">
-                                    <input class="form-control w-100 shadow-none rounded-pill fs-14" type="search" placeholder="Search" aria-label="Search" />
-                                    <button class="btn bnt-light border-0 shadow-none position-absolute start-0 top-0" type="submit"><i class="fa fa-search"></i></button>
-                                </form>
-                            </div>
+{{--                            <div class="d-sm-flex align-items-cneter gap-2 my-3 filters">--}}
+{{--                                <form class="position-relative search-bar w-auto my-0 wow animated fadeInRight" role="search">--}}
+{{--                                    <input class="form-control w-100 shadow-none rounded-pill fs-14" type="search" placeholder="Search" aria-label="Search" />--}}
+{{--                                    <button class="btn bnt-light border-0 shadow-none position-absolute start-0 top-0" type="submit"><i class="fa fa-search"></i></button>--}}
+{{--                                </form>--}}
+{{--                            </div>--}}
                         </div>
                     </div>
                     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="mt-4 wow animated fadeInDown">
