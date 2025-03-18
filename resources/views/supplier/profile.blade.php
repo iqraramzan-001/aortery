@@ -221,14 +221,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Pick a Location</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+{{--                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">--}}
+{{--                        <span aria-hidden="true">&times;</span>--}}
+{{--                    </button>--}}
                 </div>
                 <div class="modal-body">
-                    <input id="autocomplete" class="form-control mb-2" type="text" placeholder="Search a location...">
+{{--                    <input id="autocomplete" class="form-control mb-2" type="text" placeholder="Search a location...">--}}
 
-                    <p class="mt-2"><strong>Coordinates:</strong> <span class="info">N/A</span></p>
+{{--                    <p class="mt-2"><strong>Coordinates:</strong> <span class="info">N/A</span></p>--}}
 
                     <div id="map" style="width: 100%; height: 400px;"></div>
                 </div>
@@ -325,7 +325,7 @@
                     let lng = location.lng();
                     currentRow.find(".latitude").val(location.lat());
                     currentRow.find(".longitude").val(location.lng());
-                    currentRow.find(".locationInput").val(`Lat: ${location.lat()}, Lng: ${location.lng()}`);
+                    // currentRow.find(".locationInput").val(`Lat: ${location.lat()}, Lng: ${location.lng()}`);
                     getAddress(lat, lng);
                 }
             }
@@ -354,7 +354,7 @@
 
                             // ✅ Setting the address correctly
                             currentRow.find(".location").val(address);
-                            currentRow.find(".locationInput").val(address);
+                            // currentRow.find(".locationInput").val(address);
 
 
 

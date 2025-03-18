@@ -8,6 +8,7 @@ use App\Http\Interfaces\SupplierInterface;
 use App\Models\Buyer;
 use App\Models\Company;
 use App\Models\CompanyDocument;
+use App\Models\DeliveryLocation;
 use App\Models\UserDocument;
 use App\Models\WareHouse;
 use App\Traits\FileUploads;
@@ -26,6 +27,7 @@ class BuyerService implements BuyerInterface
     }
     public function profile(array $data)
     {
+
         try {
             DB::beginTransaction();
             $id = Auth::id();
@@ -44,13 +46,9 @@ class BuyerService implements BuyerInterface
             ]);
             $company = $this->company->where('user_id',$id)->first();
 
-            $warehouse=WareHouse::create([
-                'company_id'=>$company->id,
-                'name'=>$data['house_name'],
-                'location'=>$data['location'],
-                'open_from'=>$data['open_from'],
-                'open_to'=>$data['open_to']
-            ]);
+
+
+
 
             $this->model->where('user_id', $id)->update([
                 'first_name' => $data['first_name'],
@@ -59,6 +57,25 @@ class BuyerService implements BuyerInterface
                 'phone' => $data['phone']
             ]);
             $buyer = $this->model->where('user_id',$id)->first();
+
+
+            $locations = json_decode($data['locations'], true);
+
+            if($locations){
+                DeliveryLocation::where('buyer_id',$buyer->id)->delete();
+            }
+
+            foreach ($locations as $location) {
+                DeliveryLocation::create([
+
+                    'buyer_id'=>$buyer->id,
+                    'location' => $location['location'],
+                    'latitude' => $location['latitude'],
+                    'longitude' => $location['longitude'],
+                    'open_from' => $location['open_from'],
+                    'open_to' => $location['open_to']
+                ]);
+            }
 
 
             if ($letter) {

@@ -45,45 +45,48 @@
                                            value="{{ old('address', $company->address ?? '') }}"  />
                                 </div>
                             </div>
-                            <form id="warehoureform">
-                                <div class="col-12">
-                                    <div class="mt-2 wow animated fadeInDown">
-                                        <label class="form-label">Warehouse Location</label>
-                                    </div>
+                            <div class="col-12">
+                                <div class="mt-2 wow animated fadeInDown">
+                                    <label class="form-label">Delivery Location</label>
                                 </div>
-                                <div class="col-lg-4">
-                                    <div class="my-4 wow animated fadeInDown">
-                                        <label class="form-label">Warehouse Name <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control p-3 rounded-pill shadow-none" placeholder="Ex: XYZ PVT LTD"  name="house_name"/>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="my-4 wow animated fadeInDown">
-                                        <label class="form-label">Location</label>
-                                        <input type="text" class="form-control p-3 rounded-pill shadow-none" placeholder="Ex: Google Map" name="location" />
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 position-relative">
-                                    <!-- <a href="javascript:;" class="text-danger position-absolute end-0 me-2 mt-4 wow animated fadeInDown"><i class="fa fa-trash-alt"></i></a> -->
-                                    <label class="form-label mt-4">Opening Hours</label>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="mb-4 wow animated fadeInDown">
-                                                <input type="time" class="form-control p-3 rounded-pill shadow-none" name="open_from" />
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="mb-4 wow animated fadeInDown">
-                                                <input type="time" class="form-control p-3 rounded-pill shadow-none" name="open_to" />
-                                            </div>
+                            </div>
+                            @foreach($buyer->locations as $loc)
+                                <div class="row locationRow" id="row-{{$loc->id}}" >
+                                    <div class="col-lg-5">
+                                        <div class="my-4 wow animated fadeInDown">
+                                            <label class="form-label">Location</label>
+                                            <input type="text" class="form-control p-3 rounded-pill shadow-none locationInput" placeholder="@google map"/>
+                                            <input type="hidden" class="latitude" name="latitude[]" value="{{$loc->latitude}}"   />
+                                            <input type="hidden" class="longitude" name="longitude[]" value="{{$loc->longitude}}"  />
+                                            <input type="hidden" class="location" name="location[]" value="{{$loc->location}}"  />
                                         </div>
                                     </div>
-                                </div>
+                                    <div class="col-lg-7 position-relative">
+                                        <!-- <a href="javascript:;" class="text-danger position-absolute end-0 me-2 mt-4 wow animated fadeInDown"><i class="fa fa-trash-alt"></i></a> -->
+                                        <label class="form-label mt-4">Opening Hours</label>
+                                        <div class="row">
+                                            <div class="col-sm-5">
+                                                <div class="mb-4 wow animated fadeInDown">
+                                                    <input type="time" class="form-control p-3 rounded-pill shadow-none" name="open_from[]" value="{{$loc->open_from}}" />
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <div class="mb-4 wow animated fadeInDown">
+                                                    <input type="time" class="form-control p-3 rounded-pill shadow-none" name="open_to[]" value="{{$loc->open_to}}" />
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="button" class="btn btn-outline-danger w-100 p-2 delete-buyer-location" data-id="{{$loc->id}}"><i class="fa fa-trash-alt me-1"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                            </form>
+                                </div>
+                            @endforeach
+
 
                             <div class="col-12">
-                                <button  class="btn btn-purple rounded-pill btn-sm px-3"><i class="fa fa-plus me-1"></i>Add Another</button>
+                                <button id="locationBtn" type="button"  class="btn btn-purple rounded-pill btn-sm px-3"><i class="fa fa-plus me-1"></i>Add Another</button>
                             </div>
                             <div class="col-12">
                                 <div class="my-4 wow animated fadeInDown">
@@ -227,11 +230,179 @@
         </div>
     </div>
 </div>
+<div class="buyerLocationModal modal fade"  tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pick a Location</h5>
+{{--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">--}}
+{{--                    <span aria-hidden="true">&times;</span>--}}
+{{--                </button>--}}
+            </div>
+            <div class="modal-body">
+{{--                <input id="autocomplete" class="form-control mb-2" type="text" placeholder="Search a location...">--}}
+
+{{--                <p class="mt-2"><strong>Coordinates:</strong> <span class="info">N/A</span></p>--}}
+
+                <div id="map" style="width: 100%; height: 400px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary saveLocationBtn" data-dismiss="modal">Close</button>
+                <button type="button"  class="btn btn-primary saveLocationBtn">Save Location</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
+    let currentRow = null;
+    let map, marker;
+
+    window.initMap = function () {
+        const defaultPosition = { lat: 37.7749, lng: -122.4194 }; // San Francisco
+
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: defaultPosition
+        });
+
+
+        marker = new google.maps.Marker({
+            position: defaultPosition,
+            map: map,
+            draggable: true
+        });
+
+
+        autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
+        autocomplete.bindTo('bounds', map);
+
+
+        autocomplete.addListener('place_changed', function () {
+            const place = autocomplete.getPlace();
+            if (!place.geometry) return;
+
+            map.setCenter(place.geometry.location);
+            marker.setPosition(place.geometry.location);
+            updateCoordinates(place.geometry.location);
+        });
+
+        // Update coordinates when marker is dragged
+        marker.addListener('dragend', function (event) {
+            updateCoordinates(event.latLng);
+        });
+
+        // Initialize Geocoder
+        geocoder = new google.maps.Geocoder();
+
+
+        function updateCoordinates(location) {
+            if (currentRow) {
+                let lat = location.lat();
+                let lng = location.lng();
+                currentRow.find(".latitude").val(location.lat());
+                currentRow.find(".longitude").val(location.lng());
+                // currentRow.find(".locationInput").val(`Lat: ${location.lat()}, Lng: ${location.lng()}`);
+                getAddress(lat, lng);
+            }
+        }
+        // // Function to update coordinates
+        // function updateCoordinates(location) {
+        //     const lat = location.lat();
+        //     const lng = location.lng();
+        //     getAddress(lat, lng);
+        //     $(".info").text(`${lat}, ${lng}`);
+        //
+        //     console.log("New Coordinates:", lat, lng);
+        // }
+
+
+        function getAddress(lat, lng) {
+            const latLng = { lat: lat, lng: lng };
+
+            geocoder.geocode({ location: latLng }, function (results, status) {
+                if (status === "OK") {
+                    if (results[0]) {
+                        const address = results[0].formatted_address;
+                        console.log("Address",address)
+                        console.log("Lat",lat)
+                        console.log("Loni",lng)
+
+
+                        // ✅ Setting the address correctly
+                        currentRow.find(".location").val(address);
+                        // currentRow.find(".locationInput").val(address);
+
+
+
+                    }
+                } else {
+                    console.log("Geocoder failed due to: " + status);
+                }
+            });
+        }
+    };
+</script>
+
+
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQxDtoDoP_al1kFRr5txQZz4pL9fIacqw&libraries=places&callback=initMap" async defer></script>
+<script>
 
     $(document).ready(function () {
+
+        $("#locationBtn").click(function (e) {
+            e.preventDefault();
+            console.log("Location button clicked");
+
+            let newRow = $(".locationRow").last().clone(); // Clone last row
+            newRow.find("input").val(""); // Clear input values
+
+            let uniqueId = new Date().getTime(); // Unique ID for new inputs
+
+            newRow.find("input").each(function () {
+                let name = $(this).attr("name");
+                if (name) {
+                    $(this).attr("name", name.replace("[]", "") + "_" + uniqueId + "[]");
+                }
+            });
+
+            $(".locationRow").last().after(newRow); // Add new row after last row
+        });
+
+
+
+
+
+
+
+        $(document).on("click", ".locationInput", function () {
+            console.log("LocationInput clci");
+            currentRow = $(this).closest(".locationRow");
+            console.log("Current Row",currentRow);
+
+            let lat = parseFloat(currentRow.find(".latitude").val()) || 37.7749;
+            let lng = parseFloat(currentRow.find(".longitude").val()) || -122.4194;
+            console.log("Lat.................",lat);
+            console.log("lON...................",lng)
+            let position = { lat: lat, lng: lng };
+
+            map.setCenter(position);
+            marker.setPosition(position);
+
+            $(".buyerLocationModal").modal("show");
+
+        });
+
+
+        $(".saveLocationBtn").click(function () {
+            $(".buyerLocationModal").modal("hide");
+        });
+
+
         $('#confirmSubmit').on('click', function () {
             console.log("inside jssdsd")
             $('#confirmationModalBuyer').modal('show');
@@ -242,19 +413,77 @@
             $('#confirmationModalBuyer').modal('hide');
             e.preventDefault();
             console.log("inside form submit");
+
+            let deliveryLocations = [];
+            $(".locationRow").each(function () {
+                let locationData = {
+                    latitude: $(this).find(".latitude").val(),
+                    longitude: $(this).find(".longitude").val(),
+                    open_from: $(this).find("[name^='open_from']").val(),
+                    open_to: $(this).find("[name^='open_to']").val(),
+                    location:$(this).find(".location").val(),
+                };
+                deliveryLocations.push(locationData);
+            });
+
             var formData = new FormData($('#profileFormBuyer')[0]);
+
+            formData.append("locations", JSON.stringify(deliveryLocations));
             $.ajax({
                 url: $('#profileFormBuyer').attr('action'),
                 type: $('#profileFormBuyer').attr('method'),
                 data: formData,
-                processData: false,  // FormData use karne ke liye false rakhein
-                contentType: false,  // File upload ke liye content type ko false rakhein
+                processData: false,
+                contentType: false,
                 success: function (response) {
 
                     $('#successModalBuyer').modal('show');
                 },
                 error: function (xhr, status, error) {
                     console.log("Form submission error:", error);
+                }
+            });
+        });
+
+        $(document).on("click", ".delete-buyer-location", function () {
+            let warehouseId = $(this).data("id");
+            console.log("Deleting: #row-" + warehouseId); // Debugging
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('delete.location', ':id') }}".replace(':id', warehouseId), // Laravel Route
+                        type: "DELETE",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function (response) {
+                            let jsonResponse = typeof response === "string" ? JSON.parse(response) : response;
+
+                            if (jsonResponse.status === "success") {
+                                Swal.fire("Deleted!", jsonResponse.message, "success");
+
+                                $("#row-" + warehouseId).fadeOut(500, function () {
+                                    $(this).remove();
+                                });
+                            } else {
+                                Swal.fire("Error!", "Something went wrong.", "error");
+                            }
+                        },
+
+                        error: function () {
+                            console.log("AJAX Error:", xhr.responseText);
+                            Swal.fire("Error!", "Something went wrong.", "error");
+                        }
+                    });
                 }
             });
         });

@@ -65,6 +65,7 @@ Route::get('/products/search', [ProductController::class, 'search'])->name('prod
 Route::get('/products/filter', [ProductController::class, 'filter'])->name('product.filter');
 
 Route::group(['middleware' => 'auth'], function (){
+    Route::delete('/delivery-loc/{id}', [BuyerController::class,'deleteLocation'])->name('delete.location');
 
     Route::post('/upload-image', [ProductController::class,'uploads'])->name('image.upload');
     Route::get('/categories/{parent_id}', [ProductController::class, 'getSubCategories']);
@@ -120,6 +121,8 @@ Route::group(['middleware' => 'auth'], function (){
 
         });
     });
+
+
 
     Route::prefix('buyer')->group(function () {
         Route::controller(BuyerController::class)->group(function () {

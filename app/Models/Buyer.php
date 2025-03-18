@@ -25,6 +25,12 @@ class Buyer extends Model
     {
         return $this->hasMany(Order::class, 'buyer_id');
     }
+    public function locations()
+    {
+        return $this->hasMany(DeliveryLocation::class, 'buyer_id');
+    }
+
+
 
     public function company()
     {

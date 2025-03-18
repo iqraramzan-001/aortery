@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Interfaces\BuyerInterface;
 use App\Models\Company;
 use App\Models\Buyer;
+use App\Models\DeliveryLocation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,7 +23,8 @@ class BuyerController extends Controller
         $company = Company::where('user_id', $userId)->first();
 
 
-        $buyer = Auth::user()->buyer ? Buyer::where('id', Auth::user()->buyer->id)->first() : null;
+        $buyer = Auth::user()->buyer ? Buyer::with('locations')->where('id', Auth::user()->buyer->id)->first() : null;
+
         return view('buyer.profile',compact('company','buyer'));
     }
 
@@ -35,4 +37,13 @@ class BuyerController extends Controller
          }
 
      }
+    public function deleteLocation($id){
+        $house=DeliveryLocation::where('id',$id)->delete();
+        if($house){
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Location Deleted Successfully'
+            ], 200);
+        }
+    }
 }
