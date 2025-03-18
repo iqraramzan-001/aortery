@@ -274,13 +274,6 @@ class ProductController extends Controller
                 ->whereBetween('price', [$minPrice, $maxPrice]);
 
 
-//            dd([
-//                'Min Price' => $minPrice,
-//                'Max Price' => $maxPrice,
-//                'SQL Query' => $query->toSql(),
-//                'Bindings' => $query->getBindings(),
-//                'Results' => $query->get(),
-//            ]);
         }
 
 

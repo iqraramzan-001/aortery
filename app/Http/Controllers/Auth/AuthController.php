@@ -158,7 +158,12 @@ class AuthController extends Controller
 
         $user = $this->auth->register($request->all());
 
-        if($user){
+        $userData = User::where('id',$user->id)->first();
+        if(!$userData){
+            return redirect()->back()->with('message',"Something Went Wrong");
+        }
+
+        if($userData){
             $token = rand(100000, 999999);
 
             DB::table('password_reset_tokens')->insert([

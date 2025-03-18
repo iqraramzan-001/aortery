@@ -6,7 +6,7 @@
         @endforeach
         <ul class="sub-cat">
             @foreach($productCategory as $cat)
-                <li class="d-block py-2"><a href="{{ route('product.index', ['category_id' => $cat->id])}}" class="fs-13 transition">{{$cat->name}}</a></li>
+                <li class="d-block py-2"><a href="{{ route('product.index', ['category' => $cat->slug])}}" class="fs-13 transition">{{$cat->name}}</a></li>
             @endforeach
 
         </ul>

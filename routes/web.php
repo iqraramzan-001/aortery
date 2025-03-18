@@ -98,7 +98,7 @@ Route::group(['middleware' => 'auth'], function (){
 
 
 
-    Route::prefix('order')->group(function () {
+    Route::prefix('order')->middleware(\App\Http\Middleware\CheckUserStatus::class)->group(function () {
         Route::controller(OrderController::class)->group(function () {
             Route::get('index', 'index')->name('order.index');
             Route::get('create','create')->name('order.create');
@@ -116,7 +116,7 @@ Route::group(['middleware' => 'auth'], function (){
         Route::controller(SupplierController::class)->group(function () {
             Route::get('profile', 'create')->name('supplier.profile');
             Route::post('profile', 'profile')->name('save.supplier.profile');
-            Route::get('products','products')->name('supplier.product');
+            Route::get('products','products')->name('supplier.product')->middleware(\App\Http\Middleware\CheckUserStatus::class);
 
 
         });

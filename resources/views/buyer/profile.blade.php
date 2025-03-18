@@ -9,6 +9,23 @@
                 <h3 class="h3 wow animated fadeInDown fw-bold"><i class="fa fa-user-tie me-2"></i> Buyer <span class="text-purple">Portal</span></h3>
             </div>
         </div>
+
+        <div class="col-12">
+            @if(session('status') && auth()->user()->buyer->status === 'active')
+                <div class="alert alert-success d-flex gap-2 aling-items-start lh-150 wow animated fadeInDown mt-4 fs-14">
+                    <i class="fa fa-check fs-4"></i> Your profile has been approved.
+                </div>
+            @endif
+            @if(auth()->user()->buyer->status === 'inactive')
+                <div class="alert alert-warning d-flex gap-2 aling-items-start lh-150 wow animated fadeInDown mt-4 fs-14">
+                    <i class="fa fa-triangle-exclamation fs-4"></i> Profile is currently under review. Allow 48 hours to complete the process.
+                </div>
+            @elseif(auth()->user()->buyer->status === 'declined')
+                <div class="alert alert-danger d-flex gap-2 aling-items-start lh-150 wow animated fadeInDown mt-4 fs-14">
+                    <i class="fa fa-times fs-4"></i> Profile declined. Check your email for further information.
+                </div>
+            @endif
+        </div>
         <div class="row align-items-stretch">
             @if(Auth::user()->type==='admin')
                 @include('admin.components.sidebar')
