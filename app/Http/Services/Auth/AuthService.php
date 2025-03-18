@@ -4,10 +4,12 @@ namespace App\Http\Services\Auth;
 
 use App\Http\Interfaces\Auth\AuthInterface;
 
+use App\Models\DeliveryLocation;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Supplier;
 use App\Models\Buyer;
+use App\Models\WareHouse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use function PHPUnit\Framework\throwException;
@@ -42,6 +44,8 @@ class AuthService implements AuthInterface{
                 'registration_number' => $data['register_number'],
             ]);
 
+
+
             if ($user && $data['type'] === User::TYPE_SUPPLIER) {
 
                 $supplier = $this->supplier->create([
@@ -49,14 +53,23 @@ class AuthService implements AuthInterface{
                     'email' => $data['email'],
                 ]);
 
+                $warehouse=WareHouse::create([
+                    'company_id'=>$company->id,
+                ]);
+
             }
 
             if ($user && $data['type'] === User::TYPE_BUYER) {
-                $this->buyer->create([
+               $buyer= $this->buyer->create([
                     'user_id' => $user->id,
                     'email' => $data['email'],
                 ]);
+               $location=DeliveryLocation::create([
+                   'buyer_id'=>$buyer->id
+               ]);
+
             }
+
             session(['auth_email' => $data['email']]);
 
             Auth::user($user);

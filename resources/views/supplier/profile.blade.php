@@ -405,8 +405,8 @@
 
                 let lat = parseFloat(currentRow.find(".latitude").val()) || 37.7749;
                 let lng = parseFloat(currentRow.find(".longitude").val()) || -122.4194;
-console.log("Lat.................",lat);
-console.log("lON...................",lng)
+                    console.log("Lat.................",lat);
+                    console.log("lON...................",lng)
                 let position = { lat: lat, lng: lng };
 
                 map.setCenter(position);
