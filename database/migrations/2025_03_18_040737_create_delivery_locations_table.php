@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
-            $table->time('open_from');
-            $table->time('open_to');
+            $table->time('open_from')->nullable();
+            $table->time('open_to')->nullable();
             $table->foreign('buyer_id')->references('id')->on('buyers')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();

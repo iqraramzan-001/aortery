@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Interfaces\ProductInterface;
+use App\Models\Category;
 use App\Models\CompanyDocument;
 use App\Models\Product;
 use App\Models\UserDocument;
@@ -25,13 +26,21 @@ class ProductService implements ProductInterface
 
         $query=$this->model::with('images','supplier','category');
 
-        $category=request()->query('category_id');
+        $category=request()->query('category');
 
-        $query->when($category, function ($query, $category) {
-            $query->whereHas('category', function ($query) use ($category) {
-                $query->whereIn('id', (array) $category);
-            });
-        });
+        if ($category) {
+            $categoryId = Category::where('slug', $category)->first();
+            if ($categoryId) {
+                $query->whereHas('category', function ($query) use ($categoryId) {
+                    $query->where('id', $categoryId->id); // Direct ID filter
+                });
+            }
+        }
+
+
+
+
+
         return $query->paginate(9);
     }
 

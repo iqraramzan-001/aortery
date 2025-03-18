@@ -28,13 +28,13 @@
                                 <div class="row py-1 sub-menu" id="sub{{ $category->id }}">
                                     @foreach($category->children as $subCategory)
                                         <div class="col-lg-3 col-md-6 my-3">
-                                            <a href="{{ route('product.index', ['category_id' => $subCategory->id])}}" class="h6 fw-bold">{{ $subCategory->name }}</a>
+                                            <a href="{{ route('product.index', ['category' => $subCategory->slug])}}" class="h6 fw-bold">{{ $subCategory->name }}</a>
                                             @if($subCategory->children->isNotEmpty())
                                                 <ul class="sub-cats">
                                                     @foreach($subCategory->children as $subSubCategory)
                                                         <li>
 
-                                                            <a href="{{ route('product.index', ['category_id' => $subSubCategory->id])}}" class="py-1 d-block fs-13 transition">
+                                                            <a href="{{ route('product.index', ['category' => $subSubCategory->slug])}}" class="py-1 d-block fs-13 transition">
                                                                 {{ $subSubCategory->name }}
                                                             </a>
                                                         </li>

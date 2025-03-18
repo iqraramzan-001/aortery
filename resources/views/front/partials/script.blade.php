@@ -623,10 +623,15 @@
             fetchProducts();
         });
 
+        $(".range-input input").on("change", function () {
+            fetchProducts();
+        });
         // Fetch Products with AJAX
         function fetchProducts() {
             let searchQuery = $("#searchInput").val();
             let filterValue = $("#filterSelect").val();
+            let minPrice = $(".range-min").val();
+            let maxPrice = $(".range-max").val();
             let viewType = localStorage.getItem("selectedView") || "grid";
             console
 
@@ -636,6 +641,8 @@
                 data: {
                     search: searchQuery,
                     filter: filterValue,
+                    min_price: minPrice,
+                    max_price: maxPrice,
                 },
                 success: function (response) {
                     if (viewType === "grid") {

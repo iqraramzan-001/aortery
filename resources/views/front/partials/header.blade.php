@@ -21,18 +21,22 @@
 
                 @if (Auth::check())
                     @php
-
                         $user = Auth::user();
-                        $name = '';
+                        $name = null;
+
                         if ($user->type === \App\Models\User::TYPE_SUPPLIER && $user->supplier) {
-                            $name = $user->supplier->first_name . ' ' . $user->supplier->last_name;
+                            $firstName = $user->supplier->first_name ?? '';
+                            $lastName = $user->supplier->last_name ?? '';
+                            $name = trim($firstName . ' ' . $lastName) ?: $user->name;
                         } elseif ($user->type === \App\Models\User::TYPE_BUYER && $user->buyer) {
-                            $name = $user->buyer->first_name . ' ' . $user->buyer->last_name;
-                        }
-                    elseif ($user->type === \App\Models\User::TYPE_ADMIN) {
-                            $name ="Admin";
+                            $firstName = $user->buyer->first_name ?? '';
+                            $lastName = $user->buyer->last_name ?? '';
+                            $name = trim($firstName . ' ' . $lastName) ?: $user->name;
+                        } elseif ($user->type === \App\Models\User::TYPE_ADMIN) {
+                            $name = "Admin";
                         }
                     @endphp
+
 
                     <li class="nav-item"><a class="nav-link py-3 py-lg-0 px-1 px-lg-1 px-lg-4 transition" href="javascript:;"><small class="d-flex align-items-center gap-2 justify-content-between">Welcome!
                                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -43,7 +47,7 @@
                                 </form></small>
                             <a href="{{ Auth::user()->type === 'supplier' ? route('supplier.profile') : route('buyer.profile') }}"
                                class="d-block text-blue mt-2">
-                                {{ $name }}
+                                {{ $name}}
                             </a>
 
 

@@ -24,8 +24,17 @@ class ProductController extends Controller
     {
         $products=$this->product->index();
 
-            $categories=Category::where('parent_id',null)->get();
+        $categories=Category::where('parent_id',null)->get();
+        $category=request()->query('category');
+
+        if ($category) {
+            $categoryId = Category::where('slug', $category)->first();
+            $productCategory = Category::where('parent_id', $categoryId->id)->limit(12)->get();
+        }
+        else{
             $productCategory=Category::whereHas('products')->limit(12)->get();
+        }
+
             return view('product.index',compact('products','categories','productCategory'));
     }
 
@@ -239,8 +248,10 @@ class ProductController extends Controller
 
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where('name', 'LIKE', "%$search%")
-                ->orWhere('description', 'LIKE', "%$search%");
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%$search%")
+                    ->orWhere('description', 'LIKE', "%$search%");
+            });
         }
 
         if ($request->has('filter')) {
@@ -255,6 +266,24 @@ class ProductController extends Controller
                 $query->orderBy('price', 'desc');
             }
         }
+        if ($request->has('min_price') && $request->has('max_price')) {
+            $minPrice = (float) $request->min_price;
+            $maxPrice = (float) $request->max_price;
+
+            $query->whereNotNull('price')
+                ->whereBetween('price', [$minPrice, $maxPrice]);
+
+
+//            dd([
+//                'Min Price' => $minPrice,
+//                'Max Price' => $maxPrice,
+//                'SQL Query' => $query->toSql(),
+//                'Bindings' => $query->getBindings(),
+//                'Results' => $query->get(),
+//            ]);
+        }
+
+
 
         $products = $query->paginate(9);
 

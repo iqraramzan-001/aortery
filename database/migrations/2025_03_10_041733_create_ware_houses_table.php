@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('ware_houses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id')->nullable();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('location')->nullable();
             $table->string('longitude')->nullable();
-            $table->time('open_from');
-            $table->time('open_to');
+            $table->time('open_from')->nullable();
+            $table->time('open_to')->nullable();
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->timestamps();
         });
